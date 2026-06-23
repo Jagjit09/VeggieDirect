@@ -194,14 +194,18 @@ const cache = {
 };
 const CACHE_TTL_MS = 10000; // 10 seconds
 
-async function syncAllDatabasesFromPinata() {
-  const now = Date.now();
-  const dbKeys = ['products', 'sellers', 'users', 'chats', 'orders'];
-  
-  for (const dbKey of dbKeys) {
+const syncPromises = new Map();
+
+async function syncDatabase(dbKey) {
+  if (syncPromises.has(dbKey)) {
+    return syncPromises.get(dbKey);
+  }
+
+  const promise = (async () => {
+    const now = Date.now();
     const cached = cache[dbKey];
     if (cached && (now - cached.lastChecked < CACHE_TTL_MS)) {
-      continue;
+      return;
     }
     
     const fileName = `${dbKey}.json`;
@@ -222,18 +226,58 @@ async function syncAllDatabasesFromPinata() {
           const data = await fetchJsonFromIpfs(latestCid);
           
           fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
-          cache[dbKey] = { cid: latestCid, lastChecked: now };
+          cache[dbKey] = { cid: latestCid, lastChecked: Date.now() };
         } else {
-          cached.lastChecked = now;
+          cached.lastChecked = Date.now();
         }
       } else {
-        cache[dbKey] = { cid: null, lastChecked: now };
+        // No CID found on Pinata. Let's upload/pin the local/bundled file to Pinata to initialize it!
+        console.log(`[PINATA] No CID found on Pinata for ${fileName}. Initializing from local...`);
+        let localData = readJsonFile(filePath, null);
+        if (localData === null) {
+          localData = (dbKey === 'sellers' || dbKey === 'chats') ? {} : [];
+        }
+        // Ensure the file exists locally
+        fs.writeFileSync(filePath, JSON.stringify(localData, null, 2), 'utf-8');
+
+        try {
+          const payload = {
+            pinataContent: localData,
+            pinataMetadata: {
+              name: fileName
+            }
+          };
+          console.log(`[PINATA] Uploading local/bundled ${fileName} to Pinata to initialize...`);
+          const uploadRes = await pinataRequest('/pinning/pinJSONToIPFS', 'POST', payload);
+          if (uploadRes && uploadRes.IpfsHash) {
+            console.log(`[PINATA] Successfully initialized ${fileName} on Pinata: ${uploadRes.IpfsHash}`);
+            cache[dbKey] = { cid: uploadRes.IpfsHash, lastChecked: Date.now() };
+          } else {
+            cache[dbKey] = { cid: null, lastChecked: Date.now() };
+          }
+        } catch (uploadErr) {
+          console.error(`[PINATA] Failed to initialize ${fileName} on Pinata:`, uploadErr);
+          cache[dbKey] = { cid: null, lastChecked: Date.now() };
+        }
       }
     } catch (err) {
       console.error(`[PINATA] Error checking ${fileName} metadata on Pinata:`, err);
-      cache[dbKey] = { cid: cached ? cached.cid : null, lastChecked: now };
+      cache[dbKey] = { cid: cached ? cached.cid : null, lastChecked: Date.now() };
     }
+  })();
+
+  syncPromises.set(dbKey, promise);
+
+  try {
+    await promise;
+  } finally {
+    syncPromises.delete(dbKey);
   }
+}
+
+async function syncAllDatabasesFromPinata() {
+  const dbKeys = ['products', 'sellers', 'users', 'chats', 'orders'];
+  await Promise.all(dbKeys.map(dbKey => syncDatabase(dbKey)));
 }
 
 async function uploadModifiedDatabasesToPinata() {
@@ -338,14 +382,15 @@ const requestHandler = async (req, res) => {
     return;
   }
 
-  let decodedUrl;
+  const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+  let pathname;
   try {
-    decodedUrl = decodeURIComponent(req.url);
+    pathname = decodeURIComponent(parsedUrl.pathname);
   } catch (e) {
-    decodedUrl = req.url;
+    pathname = parsedUrl.pathname;
   }
-  const parsedUrl = url.parse(decodedUrl, true);
-  const pathname = parsedUrl.pathname;
+  const query = Object.fromEntries(parsedUrl.searchParams);
+  parsedUrl.query = query;
 
   // 1. Sync from Pinata at start of request
   if (process.env.PINATA_JWT && pathname.startsWith('/api/')) {
@@ -852,7 +897,7 @@ const requestHandler = async (req, res) => {
   }
 
   // --- STATIC FILE SERVER HANDLER ---
-  let filePath = path.join(process.cwd(), decodedUrl === '/' ? 'index.html' : decodedUrl);
+  let filePath = path.join(process.cwd(), pathname === '/' ? 'index.html' : pathname);
   
   const rootDir = process.cwd();
   if (!filePath.startsWith(rootDir)) {
