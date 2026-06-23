@@ -1,5 +1,17 @@
 [
   {
+    "id": 5,
+    "name": "Magical Mashrooms",
+    "category": "herbs",
+    "price": 72,
+    "originalPrice": 80,
+    "discountPct": 10,
+    "unit": "500 g",
+    "sellerId": 1,
+    "imageKey": "mushroom",
+    "stock": 100
+  },
+  {
     "id": 4,
     "name": "cabbage",
     "category": "roots",

@@ -23,11 +23,11 @@ const IS_VERCEL = process.env.VERCEL;
 
 // Database file paths
 const DB_PATHS = {
-  products: IS_VERCEL ? path.join('/tmp', 'products.json') : path.join(__dirname, 'database', 'products.json'),
-  sellers: IS_VERCEL ? path.join('/tmp', 'sellers.json') : path.join(__dirname, 'database', 'sellers.json'),
-  users: IS_VERCEL ? path.join('/tmp', 'users.json') : path.join(__dirname, 'database', 'users.json'),
-  chats: IS_VERCEL ? path.join('/tmp', 'chats.json') : path.join(__dirname, 'database', 'chats.json'),
-  orders: IS_VERCEL ? path.join('/tmp', 'orders.json') : path.join(__dirname, 'database', 'orders.json')
+  products: IS_VERCEL ? path.join('/tmp', 'products.json') : path.join(__dirname, '..', 'database', 'products.json'),
+  sellers: IS_VERCEL ? path.join('/tmp', 'sellers.json') : path.join(__dirname, '..', 'database', 'sellers.json'),
+  users: IS_VERCEL ? path.join('/tmp', 'users.json') : path.join(__dirname, '..', 'database', 'users.json'),
+  chats: IS_VERCEL ? path.join('/tmp', 'chats.json') : path.join(__dirname, '..', 'database', 'chats.json'),
+  orders: IS_VERCEL ? path.join('/tmp', 'orders.json') : path.join(__dirname, '..', 'database', 'orders.json')
 };
 
 // Default welcome message per seller
@@ -47,7 +47,7 @@ function readJsonFile(filePath, defaultVal = []) {
       // If we are on Vercel and the /tmp file doesn't exist yet,
       // load it from the bundled project database files.
       const baseName = path.basename(filePath);
-      const bundledPath = path.join(__dirname, 'database', baseName);
+      const bundledPath = path.join(__dirname, '..', 'database', baseName);
       if (fs.existsSync(bundledPath)) {
         const data = JSON.parse(fs.readFileSync(bundledPath, 'utf-8'));
         fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
@@ -75,7 +75,7 @@ const activeOtps = new Map();
 
 // Load Environment variables from .env file
 function loadEnv() {
-  const envPath = path.join(__dirname, '.env');
+  const envPath = path.join(__dirname, '..', '.env');
   if (fs.existsSync(envPath)) {
     const content = fs.readFileSync(envPath, 'utf-8');
     content.split('\n').forEach(line => {
@@ -653,9 +653,10 @@ const requestHandler = (req, res) => {
   }
 
   // --- STATIC FILE SERVER HANDLER ---
-  let filePath = path.join(__dirname, decodedUrl === '/' ? 'index.html' : decodedUrl);
+  let filePath = path.join(__dirname, '..', decodedUrl === '/' ? 'index.html' : decodedUrl);
   
-  if (!filePath.startsWith(__dirname)) {
+  const rootDir = path.join(__dirname, '..');
+  if (!filePath.startsWith(rootDir)) {
     res.writeHead(403, { 'Content-Type': 'text/plain' });
     res.end('403 Forbidden');
     return;
