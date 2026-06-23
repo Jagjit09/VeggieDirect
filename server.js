@@ -19,13 +19,15 @@ const MIME_TYPES = {
   '.json': 'application/json'
 };
 
+const IS_VERCEL = process.env.VERCEL;
+
 // Database file paths
 const DB_PATHS = {
-  products: path.join(__dirname, 'database', 'products.json'),
-  sellers: path.join(__dirname, 'database', 'sellers.json'),
-  users: path.join(__dirname, 'database', 'users.json'),
-  chats: path.join(__dirname, 'database', 'chats.json'),
-  orders: path.join(__dirname, 'database', 'orders.json')
+  products: IS_VERCEL ? path.join('/tmp', 'products.json') : path.join(__dirname, 'database', 'products.json'),
+  sellers: IS_VERCEL ? path.join('/tmp', 'sellers.json') : path.join(__dirname, 'database', 'sellers.json'),
+  users: IS_VERCEL ? path.join('/tmp', 'users.json') : path.join(__dirname, 'database', 'users.json'),
+  chats: IS_VERCEL ? path.join('/tmp', 'chats.json') : path.join(__dirname, 'database', 'chats.json'),
+  orders: IS_VERCEL ? path.join('/tmp', 'orders.json') : path.join(__dirname, 'database', 'orders.json')
 };
 
 // Default welcome message per seller
@@ -41,6 +43,16 @@ function readJsonFile(filePath, defaultVal = []) {
   try {
     if (fs.existsSync(filePath)) {
       return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    } else if (IS_VERCEL) {
+      // If we are on Vercel and the /tmp file doesn't exist yet,
+      // load it from the bundled project database files.
+      const baseName = path.basename(filePath);
+      const bundledPath = path.join(__dirname, 'database', baseName);
+      if (fs.existsSync(bundledPath)) {
+        const data = JSON.parse(fs.readFileSync(bundledPath, 'utf-8'));
+        fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+        return data;
+      }
     }
   } catch (err) {
     console.error(`Error reading file ${filePath}:`, err);
@@ -140,7 +152,7 @@ function sendTwilioSMS(to, msgBody) {
   });
 }
 
-const server = http.createServer((req, res) => {
+const requestHandler = (req, res) => {
   // CORS Headers for API requests
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -666,13 +678,18 @@ const server = http.createServer((req, res) => {
       res.end(content, 'utf-8');
     }
   });
-});
+};
 
-server.listen(PORT, () => {
-  console.log(`\n==================================================`);
-  console.log(`VeggieDirect Development Server is Running!`);
-  console.log(`URL: http://localhost:${PORT}/`);
-  console.log(`Real SMS Endpoint: Enabled via Twilio API`);
-  console.log(`Press Ctrl+C to stop the server.`);
-  console.log(`==================================================\n`);
-});
+if (require.main === module) {
+  const server = http.createServer(requestHandler);
+  server.listen(PORT, () => {
+    console.log(`\n==================================================`);
+    console.log(`VeggieDirect Development Server is Running!`);
+    console.log(`URL: http://localhost:${PORT}/`);
+    console.log(`Real SMS Endpoint: Enabled via Twilio API`);
+    console.log(`Press Ctrl+C to stop the server.`);
+    console.log(`==================================================\n`);
+  });
+} else {
+  module.exports = requestHandler;
+}
