@@ -1009,8 +1009,8 @@ function updateCartUI() {
     });
   }
 
-  // Dynamic Delivery partner fee based on distance
-  let deliveryFee = 20;
+  // Dynamic Delivery partner fee based on distance: ₹10 per km (minimum ₹10)
+  let deliveryFee = 0;
   if (cart.length > 0) {
     const userLat = currentUserCoordinates ? currentUserCoordinates.lat : 18.9482;
     const userLng = currentUserCoordinates ? currentUserCoordinates.lng : 72.8258;
@@ -1027,11 +1027,7 @@ function updateCartUI() {
       }
     });
 
-    if (maxDistance < 1.0) {
-      deliveryFee = 0;
-    } else if (maxDistance > 2.0) {
-      deliveryFee = 20 + Math.round((maxDistance - 2.0) * 10);
-    }
+    deliveryFee = Math.max(10, Math.round(maxDistance * 10));
   }
 
   if (activePromo === 'DELFREE' && subtotal >= 199) {
