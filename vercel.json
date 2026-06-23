@@ -1,9 +1,4 @@
 {
-  "functions": {
-    "api/server.js": {
-      "includeFiles": ["database/**"]
-    }
-  },
   "routes": [
     {
       "src": "/api/(.*)",
