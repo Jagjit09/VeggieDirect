@@ -60,7 +60,21 @@ function readJsonFile(filePath, defaultVal = []) {
   return defaultVal;
 }
 
+const dbModifiedFlags = {
+  products: false,
+  sellers: false,
+  users: false,
+  chats: false,
+  orders: false
+};
+
 function writeJsonFile(filePath, data) {
+  const baseName = path.basename(filePath);
+  const dbKey = baseName.replace('.json', '');
+  if (dbModifiedFlags.hasOwnProperty(dbKey)) {
+    dbModifiedFlags[dbKey] = true;
+  }
+  
   try {
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
     return true;
@@ -98,6 +112,160 @@ function loadEnv() {
   }
 }
 loadEnv();
+
+// --- PINATA DECENTRALIZED STORAGE HELPERS ---
+function pinataRequest(path, method, body = null) {
+  const jwt = process.env.PINATA_JWT;
+  if (!jwt) {
+    return Promise.reject(new Error("PINATA_JWT not configured."));
+  }
+
+  const postData = body ? JSON.stringify(body) : null;
+
+  return new Promise((resolve, reject) => {
+    const options = {
+      hostname: 'api.pinata.cloud',
+      port: 443,
+      path: path,
+      method: method,
+      headers: {
+        'Authorization': `Bearer ${jwt}`
+      }
+    };
+
+    if (postData) {
+      options.headers['Content-Type'] = 'application/json';
+      options.headers['Content-Length'] = Buffer.byteLength(postData);
+    }
+
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          try {
+            resolve(JSON.parse(data));
+          } catch (e) {
+            resolve(data);
+          }
+        } else {
+          reject(new Error(`Pinata returned status ${res.statusCode}: ${data}`));
+        }
+      });
+    });
+
+    req.on('error', e => reject(e));
+    if (postData) {
+      req.write(postData);
+    }
+    req.end();
+  });
+}
+
+function fetchJsonFromIpfs(cid) {
+  return new Promise((resolve, reject) => {
+    const url = `https://gateway.pinata.cloud/ipfs/${cid}`;
+    https.get(url, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        if (res.statusCode === 200) {
+          try {
+            resolve(JSON.parse(data));
+          } catch (e) {
+            reject(new Error(`Failed to parse IPFS JSON data: ${e.message}`));
+          }
+        } else {
+          reject(new Error(`IPFS gateway returned status ${res.statusCode}`));
+        }
+      });
+    }).on('error', (e) => {
+      reject(e);
+    });
+  });
+}
+
+const cache = {
+  products: { cid: null, lastChecked: 0 },
+  sellers: { cid: null, lastChecked: 0 },
+  users: { cid: null, lastChecked: 0 },
+  chats: { cid: null, lastChecked: 0 },
+  orders: { cid: null, lastChecked: 0 }
+};
+const CACHE_TTL_MS = 10000; // 10 seconds
+
+async function syncAllDatabasesFromPinata() {
+  const now = Date.now();
+  const dbKeys = ['products', 'sellers', 'users', 'chats', 'orders'];
+  
+  for (const dbKey of dbKeys) {
+    const cached = cache[dbKey];
+    if (cached && (now - cached.lastChecked < CACHE_TTL_MS)) {
+      continue;
+    }
+    
+    const fileName = `${dbKey}.json`;
+    const filePath = DB_PATHS[dbKey];
+    
+    try {
+      const res = await pinataRequest(`/data/pinList?metadata[name]=${fileName}&status=pinned`, 'GET');
+      let latestCid = null;
+      
+      if (res && res.rows && res.rows.length > 0) {
+        res.rows.sort((a, b) => new Date(b.date_pinned) - new Date(a.date_pinned));
+        latestCid = res.rows[0].ipfsPinHash;
+      }
+      
+      if (latestCid) {
+        if (!cached || cached.cid !== latestCid) {
+          console.log(`[PINATA] Syncing ${fileName} from IPFS (CID: ${latestCid})...`);
+          const data = await fetchJsonFromIpfs(latestCid);
+          
+          fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+          cache[dbKey] = { cid: latestCid, lastChecked: now };
+        } else {
+          cached.lastChecked = now;
+        }
+      } else {
+        cache[dbKey] = { cid: null, lastChecked: now };
+      }
+    } catch (err) {
+      console.error(`[PINATA] Error checking ${fileName} metadata on Pinata:`, err);
+      cache[dbKey] = { cid: cached ? cached.cid : null, lastChecked: now };
+    }
+  }
+}
+
+async function uploadModifiedDatabasesToPinata() {
+  const dbKeys = ['products', 'sellers', 'users', 'chats', 'orders'];
+  for (const dbKey of dbKeys) {
+    if (dbModifiedFlags[dbKey]) {
+      const fileName = `${dbKey}.json`;
+      const filePath = DB_PATHS[dbKey];
+      
+      if (fs.existsSync(filePath)) {
+        try {
+          const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+          const payload = {
+            pinataContent: data,
+            pinataMetadata: {
+              name: fileName
+            }
+          };
+          console.log(`[PINATA] Uploading modified ${fileName} to Pinata...`);
+          const res = await pinataRequest('/pinning/pinJSONToIPFS', 'POST', payload);
+          if (res && res.IpfsHash) {
+            console.log(`[PINATA] Successfully pinned ${fileName} to IPFS: ${res.IpfsHash}`);
+            cache[dbKey] = { cid: res.IpfsHash, lastChecked: Date.now() };
+          }
+        } catch (err) {
+          console.error(`[PINATA] Failed to upload ${fileName} to Pinata:`, err);
+        }
+      }
+      dbModifiedFlags[dbKey] = false;
+    }
+  }
+}
 
 // Helper to accumulate and parse JSON request bodies
 function getRequestBody(req) {
@@ -158,7 +326,7 @@ function sendTwilioSMS(to, msgBody) {
   });
 }
 
-const requestHandler = (req, res) => {
+const requestHandler = async (req, res) => {
   // CORS Headers for API requests
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -178,6 +346,31 @@ const requestHandler = (req, res) => {
   }
   const parsedUrl = url.parse(decodedUrl, true);
   const pathname = parsedUrl.pathname;
+
+  // 1. Sync from Pinata at start of request
+  if (process.env.PINATA_JWT && pathname.startsWith('/api/')) {
+    try {
+      await syncAllDatabasesFromPinata();
+    } catch (err) {
+      console.error("Error syncing databases from Pinata:", err);
+    }
+  }
+
+  // Reset modification flags for this request
+  Object.keys(dbModifiedFlags).forEach(k => dbModifiedFlags[k] = false);
+
+  // Wrap res.end to upload any modifications to Pinata before finishing
+  const originalEnd = res.end;
+  res.end = async function(...args) {
+    if (process.env.PINATA_JWT) {
+      try {
+        await uploadModifiedDatabasesToPinata();
+      } catch (err) {
+        console.error("Error uploading databases to Pinata:", err);
+      }
+    }
+    originalEnd.apply(this, args);
+  };
 
   // --- API ROUTE: SEND OTP ---
   if (req.method === 'POST' && pathname === '/api/send-otp') {
