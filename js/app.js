@@ -65,77 +65,144 @@ function getFallbackSvg(key) {
   let accentColor = '#4ebe7e';
   let iconPath = '';
   
-  if (key === 'tomato') {
+  // Normalize key to lower case
+  const k = String(key).toLowerCase().trim();
+
+  if (k === 'tomato') {
     bgColor = '#ffebee';
     primaryColor = '#c62828';
     accentColor = '#ff5a5a';
     iconPath = `<circle cx="50" cy="55" r="22" fill="${primaryColor}"/><path d="M50 25 C47 25 45 28 50 32 C55 28 53 25 50 25 Z" fill="#2e7d32"/><circle cx="42" cy="48" r="4" fill="${accentColor}" opacity="0.6"/>`;
-  } else if (key === 'carrot') {
+  } else if (k === 'carrot') {
     bgColor = '#fff3e0';
     primaryColor = '#ef6c00';
     accentColor = '#ffb74d';
     iconPath = `<path d="M50 28 L40 68 C38 75 45 80 50 82 C55 80 62 75 60 68 Z" fill="${primaryColor}"/><path d="M50 28 Q45 15 35 20 Q48 10 50 28 Q52 10 65 20 Q55 15 50 28 Z" fill="#2e7d32"/>`;
-  } else if (key === 'potato') {
+  } else if (k === 'potato' || k === 'yam' || k === 'sweet_potato' || k.includes('yam') || k === 'colocasia' || k === 'taro_root') {
     bgColor = '#efebe9';
     primaryColor = '#8d6e63';
     accentColor = '#bcaaa4';
     iconPath = `<ellipse cx="50" cy="52" rx="25" ry="18" fill="${primaryColor}"/><circle cx="40" cy="46" r="2" fill="#5d4037"/><circle cx="55" cy="57" r="2" fill="#5d4037"/><circle cx="62" cy="47" r="1.5" fill="#5d4037"/>`;
-  } else if (key === 'lemon') {
-    bgColor = '#fffde7';
-    primaryColor = '#fbc02d';
-    accentColor = '#fff59d';
+  } else if (k === 'lemon' || k === 'raw_mango') {
+    bgColor = k === 'lemon' ? '#fffde7' : '#f1f8e9';
+    primaryColor = k === 'lemon' ? '#fbc02d' : '#4caf50';
+    accentColor = k === 'lemon' ? '#fff59d' : '#8bc34a';
     iconPath = `<ellipse cx="50" cy="52" rx="22" ry="16" fill="${primaryColor}"/><circle cx="38" cy="48" r="3" fill="${accentColor}" opacity="0.6"/><path d="M26 52 Q28 50 30 52 L28 52 Z" fill="${primaryColor}"/>`;
-  } else if (key === 'spinach' || key === 'mint' || key === 'cabbage') {
+  } else if (k === 'spinach' || k === 'mint' || k === 'cabbage' || k.includes('leaves') || k.includes('greens') || k.includes('spinach') || k === 'lettuce' || k === 'kale' || k === 'arugula' || k === 'coriander' || k === 'parsley' || k === 'celery' || k === 'leek' || k === 'fennel' || k === 'bok_choy' || k.includes('cabbage') || k === 'watercress' || k === 'endive' || k === 'radicchio' || k === 'swiss_chard' || k === 'collard_greens' || k === 'garlic_chives' || k === 'onion_leaves' || k === 'pea_shoots') {
     bgColor = '#e8f5e9';
     primaryColor = '#2e7d32';
     accentColor = '#81c784';
+    if (k === 'red_cabbage' || k === 'radicchio') {
+      bgColor = '#f3e5f5';
+      primaryColor = '#6a1b9a';
+      accentColor = '#ab47bc';
+    }
     iconPath = `<path d="M50 25 C65 35 65 65 50 78 C35 65 35 35 50 25 Z" fill="${primaryColor}"/><path d="M50 25 C58 32 58 52 50 62 C42 52 42 32 50 25 Z" fill="${accentColor}" opacity="0.5"/><path d="M50 25 L50 78" stroke="${primaryColor}" stroke-width="2"/>`;
-  } else if (key === 'onion') {
+  } else if (k === 'onion' || k === 'spring_onion' || k.includes('onion')) {
     bgColor = '#f3e5f5';
     primaryColor = '#8e24aa';
     accentColor = '#ba68c8';
     iconPath = `<path d="M50 28 C62 28 72 40 72 58 C72 73 62 78 50 78 C38 78 28 73 28 58 C28 40 38 28 50 28 Z" fill="${primaryColor}"/><path d="M50 22 L50 28" stroke="#2e7d32" stroke-width="3"/><path d="M42 78 Q50 81 58 78" stroke="#ffe082" stroke-width="3" fill="none"/>`;
-  } else if (key === 'capsicum') {
+  } else if (k === 'capsicum' || k === 'zucchini') {
     bgColor = '#e8f5e9';
     primaryColor = '#1b5e20';
     accentColor = '#81c784';
     iconPath = `<rect x="34" y="36" width="32" height="36" rx="8" fill="${primaryColor}"/><path d="M50 22 Q48 18 52 18 C50 22 50 36 50 36" stroke="#33691e" stroke-width="4" fill="none"/>`;
-  } else if (key === 'broccoli') {
-    bgColor = '#e8f5e9';
-    primaryColor = '#1b5e20';
-    accentColor = '#81c784';
-    iconPath = `<circle cx="40" cy="45" r="14" fill="${primaryColor}"/><circle cx="60" cy="45" r="14" fill="${primaryColor}"/><circle cx="50" cy="38" r="16" fill="${primaryColor}"/><rect x="46" y="55" width="8" height="20" fill="#8d6e63"/>`;
-  } else if (key === 'peas') {
+  } else if (k === 'broccoli' || k === 'cauliflower' || k === 'romanesco_broccoli' || k === 'brussels_sprouts') {
+    bgColor = k === 'cauliflower' ? '#fafafa' : '#e8f5e9';
+    primaryColor = k === 'cauliflower' ? '#f0f0f0' : (k === 'romanesco_broccoli' ? '#7cb342' : '#1b5e20');
+    accentColor = k === 'cauliflower' ? '#e0e0e0' : (k === 'romanesco_broccoli' ? '#a8e063' : '#81c784');
+    const leafColor = '#2e7d32';
+    iconPath = `<circle cx="40" cy="45" r="14" fill="${primaryColor}"/><circle cx="60" cy="45" r="14" fill="${primaryColor}"/><circle cx="50" cy="38" r="16" fill="${primaryColor}"/><rect x="46" y="55" width="8" height="20" fill="#8d6e63"/><path d="M26 50 C26 40 34 55 40 55" stroke="${leafColor}" stroke-width="4" fill="none"/><path d="M74 50 C74 40 66 55 60 55" stroke="${leafColor}" stroke-width="4" fill="none"/>`;
+  } else if (k === 'peas' || k.includes('beans') || k.includes('peas') || k.includes('gram') || k === 'chickpeas' || k === 'cowpea' || k === 'soybean') {
     bgColor = '#e8f5e9';
     primaryColor = '#2e7d32';
     accentColor = '#a5d6a7';
+    if (k.includes('kidney') || k.includes('black')) {
+      primaryColor = '#3e2723';
+      accentColor = '#5d4037';
+      bgColor = '#efebe9';
+    }
     iconPath = `<path d="M25 50 Q50 35 75 50 Q50 65 25 50 Z" fill="${primaryColor}"/><circle cx="38" cy="50" r="5" fill="${accentColor}"/><circle cx="50" cy="50" r="5" fill="${accentColor}"/><circle cx="62" cy="50" r="5" fill="${accentColor}"/>`;
-  } else if (key === 'cucumber') {
+  } else if (k === 'cucumber' || k.includes('gourd') || k === 'chayote') {
     bgColor = '#e8f5e9';
     primaryColor = '#1b5e20';
     accentColor = '#81c784';
+    if (k === 'ash_gourd') {
+      primaryColor = '#b2dfdb';
+      accentColor = '#e0f2f1';
+    } else if (k === 'bitter_gourd') {
+      primaryColor = '#004d40';
+      accentColor = '#00796b';
+    }
     iconPath = `<rect x="25" y="44" width="50" height="14" rx="7" transform="rotate(-15 50 50)" fill="${primaryColor}"/><circle cx="36" cy="46" r="2" fill="${accentColor}"/><circle cx="48" cy="44" r="2" fill="${accentColor}"/><circle cx="60" cy="42" r="2" fill="${accentColor}"/>`;
-  } else if (key === 'eggplant') {
+  } else if (k === 'eggplant' || k === 'brinjal') {
     bgColor = '#f3e5f5';
     primaryColor = '#4a148c';
     accentColor = '#ea80fc';
     iconPath = `<path d="M50 32 C62 32 70 45 70 65 C70 78 60 82 50 82 C40 82 30 78 30 65 C30 45 38 32 50 32 Z" fill="${primaryColor}"/><path d="M50 24 Q48 18 52 18 C50 24 50 32 50 32" stroke="#33691e" stroke-width="4" fill="none"/><path d="M42 34 C44 30 56 30 58 34" fill="#33691e"/>`;
-  } else if (key === 'ginger') {
+  } else if (k === 'ginger' || k === 'lotus_stem') {
     bgColor = '#efebe9';
     primaryColor = '#d7ccc8';
     accentColor = '#8d6e63';
     iconPath = `<path d="M30 45 Q40 40 50 48 Q60 42 70 46 L75 52 Q62 55 52 50 Q42 56 32 50 Z" fill="${primaryColor}" stroke="${accentColor}" stroke-width="2"/>`;
-  } else if (key === 'garlic') {
+  } else if (k === 'garlic' || k === 'green_garlic' || k === 'water_chestnut') {
     bgColor = '#fafafa';
     primaryColor = '#f5f5f5';
     accentColor = '#e0e0e0';
+    if (k === 'water_chestnut') {
+      bgColor = '#efebe9';
+      primaryColor = '#3e2723';
+      accentColor = '#5d4037';
+    }
     iconPath = `<path d="M50 28 C60 28 68 38 68 62 C68 76 60 78 50 78 C40 78 32 76 32 62 C32 38 40 28 50 28 Z" fill="${primaryColor}" stroke="${accentColor}" stroke-width="2"/><path d="M50 28 L50 78" stroke="${accentColor}" stroke-width="1.5"/>`;
-  } else if (key === 'mushroom') {
+  } else if (k === 'mushroom') {
     bgColor = '#f5f5f5';
     primaryColor = '#d7ccc8';
     accentColor = '#f5f5f5';
     iconPath = `<path d="M28 50 C28 30 72 30 72 50 Z" fill="${primaryColor}"/><rect x="44" y="50" width="12" height="22" rx="4" fill="${accentColor}"/>`;
+  } else if (k === 'beetroot' || k === 'turnip' || k === 'radish' || k === 'kohlrabi' || k === 'knol_khol' || k === 'rutabaga' || k === 'parsnip') {
+    const rootColor = (k === 'radish' || k === 'parsnip') ? '#f5f5f5' : (k === 'beetroot' ? '#880e4f' : '#e1bee7');
+    const leafColor = '#2e7d32';
+    bgColor = (k === 'radish' || k === 'parsnip') ? '#fafafa' : '#fce4ec';
+    iconPath = `<path d="M50 35 C65 35 65 65 50 82 C35 65 35 35 50 35 Z" fill="${rootColor}"/><path d="M50 18 Q45 8 38 12 Q48 5 50 35 Q52 5 62 12 Q55 8 50 35 Z" fill="${leafColor}"/>`;
+  } else if (k === 'okra' || k === 'lady_finger') {
+    bgColor = '#e8f5e9';
+    primaryColor = '#388e3c';
+    accentColor = '#81c784';
+    iconPath = `<path d="M46 25 L54 25 L58 75 Q50 82 42 75 Z" fill="${primaryColor}"/><path d="M50 25 L50 78" stroke="#1b5e20" stroke-width="1.5" stroke-dasharray="2,2"/><path d="M50 16 L50 25" stroke="#33691e" stroke-width="4" fill="none"/>`;
+  } else if (k.includes('chilli')) {
+    const color = k.startsWith('red') ? '#d32f2f' : '#388e3c';
+    bgColor = k.startsWith('red') ? '#ffebee' : '#e8f5e9';
+    iconPath = `<path d="M50 30 Q60 50 54 75 Q50 82 46 75 Q40 50 50 30 Z" fill="${color}"/><path d="M50 18 Q48 14 52 14 C50 18 50 30 50 30" stroke="#33691e" stroke-width="4" fill="none"/>`;
+  } else if (k === 'sweet_corn') {
+    bgColor = '#fffde7';
+    primaryColor = '#fbc02d';
+    accentColor = '#4caf50';
+    iconPath = `<ellipse cx="50" cy="55" rx="14" ry="25" fill="${primaryColor}"/><path d="M38 45 Q44 75 50 80 Q56 75 62 45 Q50 68 38 45 Z" fill="${accentColor}"/><circle cx="48" cy="45" r="2" fill="#fff9c4"/><circle cx="52" cy="55" r="2" fill="#fff9c4"/>`;
+  } else if (k === 'pumpkin' || k === 'jackfruit' || k === 'raw_papaya') {
+    bgColor = k === 'pumpkin' ? '#fff3e0' : '#f1f8e9';
+    primaryColor = k === 'pumpkin' ? '#fb8c00' : (k === 'jackfruit' ? '#558b2f' : '#689f38');
+    accentColor = k === 'pumpkin' ? '#ffb74d' : (k === 'jackfruit' ? '#689f38' : '#8bc34a');
+    iconPath = `<circle cx="50" cy="55" r="22" fill="${primaryColor}"/><ellipse cx="50" cy="55" rx="14" ry="22" fill="${accentColor}" opacity="0.8"/><ellipse cx="50" cy="55" rx="6" ry="22" fill="${primaryColor}" opacity="0.6"/><path d="M50 33 L50 25 C48 23 45 25 45 25" stroke="#2e7d32" stroke-width="4" fill="none"/>`;
+  } else if (k === 'raw_banana' || k === 'banana_flower' || k === 'banana_stem') {
+    bgColor = k === 'banana_flower' ? '#fce4ec' : '#f1f8e9';
+    primaryColor = k === 'banana_flower' ? '#880e4f' : (k === 'raw_banana' ? '#7cb342' : '#e0e0e0');
+    accentColor = k === 'banana_flower' ? '#ad1457' : (k === 'raw_banana' ? '#a8e063' : '#f5f5f5');
+    if (k === 'banana_flower') {
+      iconPath = `<path d="M50 25 C62 35 62 65 50 82 C38 65 38 35 50 25 Z" fill="${primaryColor}"/><path d="M50 20 L50 25" stroke="#5d4037" stroke-width="4"/>`;
+    } else if (k === 'banana_stem') {
+      iconPath = `<rect x="40" y="25" width="20" height="50" rx="2" fill="${primaryColor}" stroke="${accentColor}" stroke-width="2"/>`;
+    } else {
+      iconPath = `<path d="M35 35 Q50 35 60 55 Q70 75 75 75 Q60 70 45 55 Q35 45 35 35 Z" fill="${primaryColor}"/><path d="M32 30 L36 36" stroke="#5d4037" stroke-width="4"/>`;
+    }
+  } else if (k === 'artichoke' || k === 'asparagus' || k === 'bamboo_shoot' || k === 'drumstick') {
+    bgColor = '#e8f5e9';
+    primaryColor = '#2e7d32';
+    accentColor = '#81c784';
+    iconPath = `<path d="M45 78 L45 35 L50 25 L55 35 L55 78 Z" fill="${primaryColor}"/><path d="M45 45 L55 40" stroke="${accentColor}" stroke-width="2"/><path d="M45 55 L55 50" stroke="${accentColor}" stroke-width="2"/>`;
   } else {
+    // Default green leaf shape
     iconPath = `<path d="M50 25 C62 35 62 65 50 75 C38 65 38 35 50 25 Z" fill="${primaryColor}"/><path d="M50 25 L50 75" stroke="${accentColor}" stroke-width="2"/>`;
   }
 
@@ -946,7 +1013,7 @@ function renderProducts() {
     card.innerHTML = `
       ${p.discountPct > 0 ? `<div class="product-discount-label">${p.discountPct}% OFF</div>` : ''}
       <div class="product-img-box">
-        <img src="${IMAGE_MAP[p.imageKey] || IMAGE_MAP.tomato}" onerror="this.onerror=null; this.src=getFallbackSvg('${p.imageKey}')" alt="${p.name}">
+        <img src="${IMAGE_MAP[p.imageKey] || getFallbackSvg(p.imageKey)}" alt="${p.name}">
         <div class="product-freshness-wrapper">
           <div class="freshness-bar-fill" style="width: ${p.freshnessPct}%; background: ${freshnessColor};"></div>
           <span class="freshness-text"><i class="fa-solid fa-leaf"></i> ${p.freshnessPct}% Fresh (Harvested ${p.harvestTimeText} ago)</span>
@@ -1090,7 +1157,7 @@ function updateCartUI() {
       : `₹${prod.price}`;
 
     div.innerHTML = `
-      <img src="${IMAGE_MAP[prod.imageKey] || IMAGE_MAP.tomato}" onerror="this.onerror=null; this.src=getFallbackSvg('${prod.imageKey}')" class="cart-item-img" alt="${prod.name}">
+      <img src="${IMAGE_MAP[prod.imageKey] || getFallbackSvg(prod.imageKey)}" class="cart-item-img" alt="${prod.name}">
       <div class="cart-item-info">
         <div class="cart-item-title">${prod.name}</div>
         <div class="cart-item-seller">Seller: ${seller.name}</div>
@@ -1533,7 +1600,7 @@ function updateSellerDashboardListings() {
     tr.innerHTML = `
       <td>
         <div class="list-prod-info">
-          <img src="${IMAGE_MAP[p.imageKey] || IMAGE_MAP.tomato}" onerror="this.onerror=null; this.src=getFallbackSvg('${p.imageKey}')" class="list-prod-img" alt="${p.name}">
+          <img src="${IMAGE_MAP[p.imageKey] || getFallbackSvg(p.imageKey)}" class="list-prod-img" alt="${p.name}">
           <div>
             <span class="list-prod-name">${p.name}</span><br>
             <span class="list-prod-cat">${p.category}</span>
@@ -2636,11 +2703,7 @@ function openBargainModal(productId) {
   bargainSlider.value = Math.round((minOffer + maxOffer) / 2);
 
   // Update UI values
-  bargainProdImg.src = IMAGE_MAP[prod.imageKey] || IMAGE_MAP.tomato;
-  bargainProdImg.onerror = function() {
-    this.onerror = null;
-    this.src = getFallbackSvg(prod.imageKey);
-  };
+  bargainProdImg.src = IMAGE_MAP[prod.imageKey] || getFallbackSvg(prod.imageKey);
   bargainProdTitle.innerText = prod.name;
   bargainSellerName.innerText = seller.name;
   bargainOriginalPrice.innerText = `₹${prod.price}`;
