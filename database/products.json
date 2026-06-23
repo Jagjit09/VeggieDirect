@@ -1,0 +1,38 @@
+[
+  {
+    "id": 3,
+    "name": "Crunchy Carrots",
+    "category": "roots",
+    "price": 108,
+    "originalPrice": 120,
+    "discountPct": 10,
+    "unit": "kg",
+    "sellerId": 1,
+    "imageKey": "carrot",
+    "stock": 78
+  },
+  {
+    "id": 2,
+    "name": "Organic Fresh Ginger",
+    "category": "roots",
+    "price": 95,
+    "originalPrice": 100,
+    "discountPct": 5,
+    "unit": "kg",
+    "sellerId": 1,
+    "imageKey": "ginger",
+    "stock": 98
+  },
+  {
+    "id": 1,
+    "name": "Moringa",
+    "category": "organic",
+    "price": 90,
+    "originalPrice": 100,
+    "discountPct": 10,
+    "unit": "kg",
+    "sellerId": 1,
+    "imageKey": "mint",
+    "stock": 48
+  }
+]

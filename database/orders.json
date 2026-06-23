@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "items": [
+      {
+        "productId": 3,
+        "quantity": 1
+      },
+      {
+        "productId": 2,
+        "quantity": 1
+      },
+      {
+        "productId": 1,
+        "quantity": 1
+      }
+    ],
+    "paymentMethod": "Cash on Delivery",
+    "phone": "+917666452703",
+    "total": 3217,
+    "status": "pending",
+    "address": "kop",
+    "deliveryFee": 2924,
+    "orderedAt": "2026-06-23T07:00:22.954Z"
+  },
+  {
+    "id": 2,
+    "items": [
+      {
+        "productId": 3,
+        "quantity": 1
+      },
+      {
+        "productId": 2,
+        "quantity": 1
+      },
+      {
+        "productId": 1,
+        "quantity": 1
+      }
+    ],
+    "paymentMethod": "Cash on Delivery",
+    "phone": "+917666452703",
+    "total": 3217,
+    "status": "pending",
+    "address": "Tembe road , Raviwar Peth , kolhapur",
+    "deliveryFee": 2924,
+    "orderedAt": "2026-06-23T07:02:27.462Z"
+  }
+]

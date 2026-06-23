@@ -1,0 +1,14 @@
+{
+  "1": {
+    "id": 1,
+    "name": "oliva veggies",
+    "rating": 5,
+    "coordinates": {
+      "lat": 16.692135,
+      "lng": 74.244041
+    },
+    "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=60",
+    "phone": "+91 76206 53291",
+    "email": "jagjitbhosale09@gmail.com"
+  }
+}

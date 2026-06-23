@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VeggieDirect - Fresh Vegetables Direct From Local Sellers</title>
+  <meta name="description" content="Buy fresh, organic vegetables directly from local sellers. Enjoy Swiggy-like discounts, coupon codes, and simulated direct chats with vendors.">
+  <link rel="stylesheet" href="styles.css">
+  <!-- FontAwesome for Premium Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- App Header & Navigation -->
+  <header>
+    <div class="header-container">
+      <div class="logo" id="appLogo">
+        <i class="fa-solid fa-leaf"></i> Veggie<span>Direct</span>
+      </div>
+      
+      <!-- Nav Actions -->
+      <div class="nav-actions">
+        <!-- Dual View Toggle -->
+        <div class="role-toggle" id="viewToggle">
+          <span class="active" id="customerToggleBtn">Customer App</span>
+          <span id="sellerToggleBtn">Seller Panel</span>
+        </div>
+
+        <!-- User Authentication Section -->
+        <div class="auth-header-section" id="authHeaderSection">
+          <button class="login-btn-header" id="loginHeaderBtn"><i class="fa-solid fa-user"></i> Login</button>
+          <div class="user-profile-badge" id="userProfileBadge" style="display: none; position: relative; gap: 0.3rem;">
+            <i class="fa-solid fa-circle-user"></i> <span id="userPhoneDisplay">+91 9876543210</span>
+            <div class="profile-dropdown-container" style="position: relative; display: inline-block;">
+              <button class="profile-dots-btn" id="profileDotsBtn" title="Options" style="background: transparent; border: none; color: var(--text-primary); font-size: 1.1rem; padding: 0.2rem 0.5rem; cursor: pointer; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; height: 32px; width: 32px;">
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+              </button>
+              <div class="profile-dropdown-menu" id="profileDropdownMenu" style="position: absolute; top: 100%; right: 0; margin-top: 0.5rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); box-shadow: var(--shadow-md); z-index: 100; display: none; min-width: 150px; flex-direction: column; padding: 0.4rem 0; overflow: hidden;">
+                <button class="dropdown-item" id="logoutBtn" style="background: transparent; border: none; width: 100%; text-align: left; padding: 0.6rem 1rem; font-size: 0.85rem; font-weight: 600; color: var(--text-primary); cursor: pointer; display: flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+                <button class="dropdown-item delete" id="deleteAccountBtn" style="background: transparent; border: none; width: 100%; text-align: left; padding: 0.6rem 1rem; font-size: 0.85rem; font-weight: 600; color: var(--danger-color); cursor: pointer; display: flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-user-minus"></i> Delete Account</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat Notification Center Toggle -->
+        <button class="icon-btn-badge" id="chatCenterBtn" title="Inboxes & Chats">
+          <i class="fa-solid fa-comments"></i>
+          <span class="badge" id="chatBadge" style="display: none;">0</span>
+        </button>
+
+        <!-- Cart Toggle Button -->
+        <button class="icon-btn-badge" id="cartToggleBtn" title="Shopping Cart">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="badge" id="cartBadgeCount">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-wrapper">
+
+    <!-- ================= CUSTOMER PANEL VIEW ================= -->
+    <div class="customer-view-panel active" id="customerPanel">
+      
+      <!-- Hero Banner / Swiggy-style Offers Carousel -->
+      <section class="hero-slider-section" id="heroBanner">
+        <div class="hero-content">
+          <span class="hero-tag">Super Fresh Deal</span>
+          <h1 class="hero-title">Fresh Veggies,<br>Direct Seller Contact</h1>
+          <p class="hero-desc">Negotiate prices, check real-time stock, and claim Swiggy-like discounts up to 50%!</p>
+          <button class="hero-btn" id="heroPromoBtn">Claim Now</button>
+        </div>
+        <div class="hero-image-container" style="background-image: url('assets/hero_banner.png');"></div>
+      </section>
+
+      <!-- Search & Category Filters -->
+      <section class="search-filter-container">
+        <div class="search-bar-wrapper">
+          <input type="text" class="search-input-field" id="searchInput" placeholder="Search fresh tomatoes, spinach, potatoes, or vendors...">
+        </div>
+        <div class="category-scroll-container" id="categoryContainer">
+          <div class="category-tag active" data-category="all">All Items</div>
+          <div class="category-tag" data-category="greens">Leafy Greens</div>
+          <div class="category-tag" data-category="roots">Root Veggies</div>
+          <div class="category-tag" data-category="exotic">Exotics</div>
+          <div class="category-tag" data-category="herbs">Herbs</div>
+          <div class="category-tag" data-category="organic">Organic Certified</div>
+        </div>
+      </section>
+
+      <!-- Swiggy-style Discount Coupon Row -->
+      <section class="discount-banner-row">
+        <!-- Coupon 1 -->
+        <div class="promo-card card-blue" id="promoFresh50">
+          <div class="promo-info">
+            <span class="promo-badge-tag">Trending</span>
+            <h3>50% OFF</h3>
+            <p>On all organic leafy greens</p>
+            <div class="promo-code-pill">FRESH50</div>
+          </div>
+          <i class="fa-solid fa-tags fa-3x" style="opacity: 0.15;"></i>
+        </div>
+        <!-- Coupon 2 -->
+        <div class="promo-card card-orange" id="promoBogo">
+          <div class="promo-info">
+            <span class="promo-badge-tag">Bestseller</span>
+            <h3>BUY 1 GET 1</h3>
+            <p>Buy potato, get tomato free</p>
+            <div class="promo-code-pill">VEGGIEBOGO</div>
+          </div>
+          <i class="fa-solid fa-gift fa-3x" style="opacity: 0.15;"></i>
+        </div>
+        <!-- Coupon 3 -->
+        <div class="promo-card card-red" id="promoFreeDel">
+          <div class="promo-info">
+            <span class="promo-badge-tag">Freebies</span>
+            <h3>FREE DELIVERY</h3>
+            <p>On orders above ₹199</p>
+            <div class="promo-code-pill">DELFREE</div>
+          </div>
+          <i class="fa-solid fa-truck-fast fa-3x" style="opacity: 0.15;"></i>
+        </div>
+      </section>
+
+      <!-- Products Grid Section -->
+      <section>
+        <div class="section-header">
+          <h2>Direct from Nearby Farms</h2>
+          <div style="font-size: 0.9rem; color: var(--text-secondary);">
+            Showing fresh items sorted by distance
+          </div>
+        </div>
+        
+        <!-- Grid Items container -->
+        <div class="product-grid" id="productGrid">
+          <!-- Dynamic product cards will be injected by JavaScript -->
+        </div>
+      </section>
+    </div>
+
+    <!-- ================= SELLER PANEL VIEW ================= -->
+    <div class="seller-dashboard-panel" id="sellerPanel">
+      
+      <div class="dashboard-header">
+        <div>
+          <h2>Seller Dashboard</h2>
+          <p style="color: var(--text-secondary); margin-top: 0.2rem;">Welcome back, <strong>Farmside Fresh Organics</strong>! Manage stock and customer interactions.</p>
+        </div>
+        <div style="font-size: 0.95rem; font-weight: 600; color: var(--primary-color);">
+          <i class="fa-solid fa-circle" style="color: #00e676; font-size: 0.75rem;"></i> Store Open & Accepting Chats
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="dashboard-stats-grid">
+        <div class="stat-card">
+          <div class="stat-title">Today's Sales</div>
+          <div class="stat-value">₹2,840</div>
+          <div class="stat-trend"><i class="fa-solid fa-arrow-trend-up"></i> +14% compared to yesterday</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Active Enquiries</div>
+          <div class="stat-value" id="dashboardActiveChats">2</div>
+          <div class="stat-trend"><i class="fa-solid fa-message"></i> Customers waiting for response</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Store Rating</div>
+          <div class="stat-value">4.8 <span style="font-size: 1rem; color: var(--warning-color);"><i class="fa-solid fa-star"></i></span></div>
+          <div class="stat-trend">Based on 142 direct reviews</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Total Products</div>
+          <div class="stat-value" id="dashboardTotalProducts">8</div>
+          <div class="stat-trend"><i class="fa-solid fa-warehouse"></i> 7 items in stock</div>
+        </div>
+      </div>
+
+      <!-- Action Area Grid -->
+      <div class="dashboard-content-split">
+        
+        <!-- Add Vegetable Form -->
+        <div class="dashboard-form-card">
+          <h3 style="margin-bottom: 1.2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+            <i class="fa-solid fa-circle-plus"></i> Add New Product
+          </h3>
+          <form id="addProductForm">
+            <div class="form-group">
+              <label for="prodName">Vegetable Name</label>
+              <input type="text" id="prodName" required placeholder="e.g., Organic Red Carrots">
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="prodCategory">Category</label>
+                <select id="prodCategory">
+                  <option value="roots">Root Veggies</option>
+                  <option value="greens">Leafy Greens</option>
+                  <option value="exotic">Exotics</option>
+                  <option value="herbs">Herbs</option>
+                  <option value="organic">Organic Certified</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="prodUnit">Sale Unit</label>
+                <input type="text" id="prodUnit" required placeholder="e.g., 500g, 1kg, Bunch">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="prodOriginalPrice">Original Price (₹)</label>
+                <input type="number" id="prodOriginalPrice" required min="1" placeholder="90">
+              </div>
+              <div class="form-group">
+                <label for="prodDiscount">Discount Offer (%)</label>
+                <input type="number" id="prodDiscount" min="0" max="95" value="0" placeholder="e.g., 20">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="prodStock">Initial Stock Quantity</label>
+                <input type="number" id="prodStock" required min="1" placeholder="e.g. 50">
+              </div>
+              <div class="form-group">
+                <label for="prodImageSelect">Mock Image</label>
+                <select id="prodImageSelect">
+                  <option value="carrot">Carrots</option>
+                  <option value="spinach">Spinach</option>
+                  <option value="potato">Potato</option>
+                  <option value="tomato">Tomato</option>
+                  <option value="capsicum">Capsicum</option>
+                  <option value="broccoli">Broccoli</option>
+                  <option value="mint">Mint Leaves</option>
+                  <option value="ginger">Ginger</option>
+                  <option value="onion">Onions</option>
+                  <option value="garlic">Garlic</option>
+                  <option value="cabbage">Cabbage</option>
+                  <option value="cauliflower">Cauliflower</option>
+                  <option value="mushroom">Mushrooms</option>
+                  <option value="peas">Green Peas</option>
+                  <option value="lemon">Lemon</option>
+                  <option value="cucumber">Cucumber</option>
+                  <option value="eggplant">Eggplant / Brinjal</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" class="form-btn">Publish to Catalog</button>
+          </form>
+        </div>
+
+        <!-- Manage Inventory Table -->
+        <div class="dashboard-listings-card">
+          <h3 style="margin-bottom: 1.2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+            <i class="fa-solid fa-boxes-stacked"></i> Live Catalog & Discount Control
+          </h3>
+          <div class="listings-table-container">
+            <table class="listings-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Price Details</th>
+                  <th>Discount</th>
+                  <th>Stock Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="sellerListingsTable">
+                <!-- Managed listings will be dynamically rendered -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Incoming Orders Section -->
+      <div class="dashboard-orders-card" style="margin-top: 2rem; background: var(--bg-surface); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
+        <h3 style="margin-bottom: 1.2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; color: var(--primary-dark);">
+          <i class="fa-solid fa-receipt"></i> Incoming Customer Orders
+        </h3>
+        <div class="listings-table-container">
+          <table class="listings-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer Phone</th>
+                <th>Vegetables & Qty</th>
+                <th>Total Payment</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="sellerOrdersTable">
+              <tr>
+                <td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                  No pending orders yet.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ================= OVERLAYS & DRAWER COMPONENT PARTS ================= -->
+
+  <!-- Modal background dark overlay -->
+  <div class="modal-overlay" id="modalOverlay"></div>
+
+  <!-- Shopping Cart Drawer -->
+  <div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-header">
+      <h3><i class="fa-solid fa-cart-shopping"></i> Shopping Cart</h3>
+      <button class="close-btn" id="closeCartBtn">&times;</button>
+    </div>
+    
+    <div class="cart-items-list" id="cartItemsList">
+      <!-- Items dynamically populated -->
+      <div class="cart-empty-state">
+        <i class="fa-solid fa-basket-shopping"></i>
+        <p>Your basket is empty!</p>
+        <p style="font-size: 0.85rem; opacity: 0.7;">Add fresh vegetables to claim discounts.</p>
+      </div>
+    </div>
+
+    <div class="cart-footer">
+      <div class="promo-apply-box">
+        <input type="text" class="promo-input" id="promoInput" placeholder="Enter coupon code...">
+        <button class="promo-btn" id="applyPromoBtn">Apply</button>
+      </div>
+      
+      <div class="bill-details">
+        <div class="bill-row">
+          <span>Items Subtotal</span>
+          <span id="billSubtotal">₹0</span>
+        </div>
+        <div class="bill-row discount-row" id="billDiscountRow" style="display: none;">
+          <span>Coupon Discount</span>
+          <span id="billDiscount">-₹0</span>
+        </div>
+        <div class="bill-row">
+          <span>Delivery Partner Fee</span>
+          <span id="billDelivery">₹30</span>
+        </div>
+        <div class="bill-row total-row">
+          <span>Grand Total</span>
+          <span id="billGrandTotal">₹0</span>
+        </div>
+      </div>
+      
+      <!-- Payment Method Selection -->
+      <div class="payment-selection-box">
+        <h4><i class="fa-solid fa-credit-card"></i> Choose Payment Method</h4>
+        <div class="payment-options">
+          <div class="payment-option-card active" id="payMethodCod" data-method="cod">
+            <i class="fa-solid fa-hand-holding-dollar"></i>
+            <div>
+              <div class="option-title">Cash on Delivery</div>
+              <div class="option-desc">Pay with cash or UPI at delivery</div>
+            </div>
+          </div>
+          <div class="payment-option-card" id="payMethodOnline" data-method="online">
+            <i class="fa-solid fa-credit-card"></i>
+            <div>
+              <div class="option-title">Direct Online Payment</div>
+              <div class="option-desc">UPI, Cards or Net Banking</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Delivery Address Confirmation card in cart footer -->
+      <div class="cart-address-box" id="cartAddressBox" style="display: none; background: #f7faf9; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 0.8rem; margin-bottom: 0.8rem; box-sizing: border-box; text-align: left;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+          <span style="font-weight: 700; font-size: 0.8rem; text-transform: uppercase; color: var(--primary-color);"><i class="fa-solid fa-location-dot"></i> Delivering To</span>
+          <button id="editCartAddressBtn" style="background: none; border: none; color: var(--accent-color); font-weight: 700; cursor: pointer; font-size: 0.75rem; padding: 0;">Change</button>
+        </div>
+        <div id="cartAddressName" style="font-weight: 700; font-size: 0.85rem; color: var(--text-main); margin-bottom: 0.1rem;">John Doe</div>
+        <div id="cartAddressText" style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.3;">123 Green Street, Pincode: 400001</div>
+        <div id="cartAddressCoords" style="font-size: 0.75rem; color: var(--text-secondary); font-style: italic; margin-top: 0.2rem; display: flex; align-items: center; gap: 0.3rem;">
+          <i class="fa-solid fa-compass"></i> Coordinates: <span id="cartCoordsDisplay">Fetching...</span>
+        </div>
+      </div>
+      
+      <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout</button>
+    </div>
+  </div>
+
+  <!-- Simulated Live Chat Drawer -->
+  <div class="chat-drawer" id="chatDrawer">
+    <div class="chat-header">
+      <img src="" class="chat-seller-avatar" id="chatAvatar" alt="Seller Avatar">
+      <div class="chat-seller-details">
+        <div class="chat-seller-name" id="chatSellerName">Farmside Fresh</div>
+        <div class="chat-seller-status">
+          <span class="status-dot"></span> Online
+        </div>
+      </div>
+      <div class="chat-header-actions">
+        <!-- Call Simulation Button -->
+        <button class="chat-header-btn" id="chatCallBtn" title="Call Seller Direct"><i class="fa-solid fa-phone"></i></button>
+        <!-- WhatsApp External Sim link -->
+        <button class="chat-header-btn" id="chatWhatsAppBtn" title="WhatsApp Seller"><i class="fa-brands fa-whatsapp"></i></button>
+        <!-- Close Drawer Button -->
+        <button class="chat-header-btn" id="closeChatBtn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    </div>
+
+    <!-- Scrolling message section -->
+    <div class="chat-messages" id="chatMessages">
+      <!-- Simulated messages will go here -->
+    </div>
+
+    <!-- Typing simulation text -->
+    <div class="chat-typing-indicator" id="chatTypingIndicator">
+      <span></span><span></span><span></span>
+    </div>
+
+    <!-- Footer Input Composer -->
+    <div class="chat-footer-input">
+      <input type="text" class="chat-input" id="chatInputField" placeholder="Type a message to negotiator...">
+      <button class="chat-send-btn" id="chatSendBtn"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+  </div>
+
+  <!-- Simulated Phone Call Modal -->
+  <div class="call-modal" id="callModal">
+    <img src="" class="call-avatar" id="callAvatar" alt="Seller Avatar">
+    <div class="call-name" id="callName">Farmside Fresh</div>
+    <div class="call-status" id="callStatus">CALLING...</div>
+    <div class="call-actions">
+      <!-- Decline Button -->
+      <button class="call-btn decline" id="declineCallBtn" title="Decline"><i class="fa-solid fa-phone-slash"></i></button>
+      <!-- Accept/Connect Button -->
+      <button class="call-btn accept" id="acceptCallBtn" title="Connect"><i class="fa-solid fa-phone"></i></button>
+    </div>
+  </div>
+
+  <!-- Mobile Login/OTP Modal -->
+  <div class="login-modal" id="loginModal">
+    <button class="close-btn login-close" id="closeLoginBtn">&times;</button>
+    
+    <!-- Tab Switcher -->
+    <div class="login-tabs" style="display: flex; gap: 0.5rem; margin-bottom: 1.2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; width: 100%;">
+      <button class="tab-btn active" id="loginTabCustomer" style="flex: 1; padding: 0.6rem; border: none; background: none; font-weight: 700; cursor: pointer; color: var(--primary-color); border-bottom: 2px solid var(--primary-color); font-size: 0.95rem;">Customer Login</button>
+      <button class="tab-btn" id="loginTabSeller" style="flex: 1; padding: 0.6rem; border: none; background: none; font-weight: 700; cursor: pointer; color: var(--text-secondary); border-bottom: 2px solid transparent; font-size: 0.95rem;">Seller Login</button>
+    </div>
+
+    <!-- Step 1: Mobile Input -->
+    <div class="login-step" id="loginStepMobile">
+      <i class="fa-solid fa-mobile-screen-button fa-3x" style="color: var(--primary-color); margin-bottom: 1rem;"></i>
+      <h3 id="loginStepMobileTitle">Customer Sign In</h3>
+      <p id="loginStepMobileDesc" style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem; text-align: center;">Enter your 10-digit mobile number to access direct seller contact and discounts.</p>
+      
+      <div class="form-group" style="width: 100%;">
+        <label for="loginMobile">Mobile Number</label>
+        <div class="mobile-input-wrapper" style="display: flex; gap: 0.5rem; align-items: center; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 0.7rem 1rem;">
+          <span style="font-weight: 700; color: var(--primary-color);">+91</span>
+          <input type="tel" id="loginMobile" maxlength="10" placeholder="98765 43210" style="border: none; background: transparent; flex-grow: 1; font-size: 1rem; font-weight: 600;" required>
+        </div>
+      </div>
+      <button class="form-btn" id="sendOtpBtn" style="margin-top: 1rem;">Send OTP</button>
+    </div>
+
+    <!-- Step 2: OTP Input -->
+    <div class="login-step" id="loginStepOtp" style="display: none;">
+      <i class="fa-solid fa-shield-halved fa-3x" style="color: var(--primary-color); margin-bottom: 1rem;"></i>
+      <h3>Verify OTP Code</h3>
+      <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem; text-align: center;">Simulated SMS code sent to <strong id="sentMobileDisplay">+91 00000 00000</strong></p>
+      
+      <div class="otp-inputs-row" style="display: flex; justify-content: space-between; gap: 0.5rem; width: 100%; margin-bottom: 1rem;">
+        <input type="text" class="otp-input-field" maxlength="1" data-index="1" style="width: 44px; height: 44px; text-align: center; font-size: 1.2rem; font-weight: 700; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-primary);">
+        <input type="text" class="otp-input-field" maxlength="1" data-index="2" style="width: 44px; height: 44px; text-align: center; font-size: 1.2rem; font-weight: 700; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-primary);">
+        <input type="text" class="otp-input-field" maxlength="1" data-index="3" style="width: 44px; height: 44px; text-align: center; font-size: 1.2rem; font-weight: 700; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-primary);">
+        <input type="text" class="otp-input-field" maxlength="1" data-index="4" style="width: 44px; height: 44px; text-align: center; font-size: 1.2rem; font-weight: 700; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-primary);">
+        <input type="text" class="otp-input-field" maxlength="1" data-index="5" style="width: 44px; height: 44px; text-align: center; font-size: 1.2rem; font-weight: 700; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-primary);">
+        <input type="text" class="otp-input-field" maxlength="1" data-index="6" style="width: 44px; height: 44px; text-align: center; font-size: 1.2rem; font-weight: 700; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-primary);">
+      </div>
+      
+      <button class="form-btn" id="verifyOtpBtn">Verify & Sign In</button>
+      
+      <div class="otp-resend-row" style="margin-top: 1.2rem; font-size: 0.85rem; color: var(--text-secondary); text-align: center;">
+        Didn't receive code? <span id="otpTimer" style="font-weight: 600; color: var(--primary-color);">Resend in 30s</span>
+        <button id="resendOtpBtn" style="display: none; background: none; border: none; color: var(--accent-color); font-weight: 700; cursor: pointer;">Resend OTP Code</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Seller Registration -->
+    <div class="login-step" id="loginStepSellerRegister" style="display: none;">
+      <i class="fa-solid fa-store fa-3x" style="color: var(--primary-color); margin-bottom: 1rem;"></i>
+      <h3>Register Farm Store</h3>
+      <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.2rem; text-align: center;">Set up your farmside outlet to start selling fresh produce.</p>
+      
+      <div class="form-group" style="width: 100%; margin-bottom: 0.8rem;">
+        <label for="registerFarmName" style="font-weight:700; color:var(--primary-dark); font-size:0.85rem;">Farm / Store Name</label>
+        <input type="text" id="registerFarmName" placeholder="e.g. Greenfield Organic Farm" style="width: 100%; padding: 0.7rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-primary); font-size: 0.95rem; font-weight: 600; box-sizing: border-box;">
+      </div>
+      
+      <div class="form-group" style="width: 100%; margin-bottom: 0.8rem;">
+        <label for="registerFarmEmail" style="font-weight:700; color:var(--primary-dark); font-size:0.85rem;">Contact Email</label>
+        <input type="email" id="registerFarmEmail" placeholder="e.g. farmer@greenfield.in" style="width: 100%; padding: 0.7rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-primary); font-size: 0.95rem; font-weight: 600; box-sizing: border-box;">
+      </div>
+      
+      <div class="form-group" style="width: 100%; margin-bottom: 0.8rem;">
+        <label style="font-weight:700; color:var(--primary-dark); font-size:0.85rem; display: flex; justify-content: space-between; align-items: center;">
+          <span>Store Coordinates</span>
+          <button type="button" id="detectSellerLocationBtn" style="background: none; border: none; color: var(--accent-color); font-weight: 700; cursor: pointer; font-size: 0.8rem; padding: 0;">
+            <i class="fa-solid fa-location-crosshairs"></i> Get GPS Location
+          </button>
+        </label>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+          <input type="text" id="registerFarmLat" placeholder="Latitude" style="width: 100%; padding: 0.7rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-primary); font-size: 0.9rem; font-weight: 600; box-sizing: border-box;">
+          <input type="text" id="registerFarmLng" placeholder="Longitude" style="width: 100%; padding: 0.7rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-primary); font-size: 0.9rem; font-weight: 600; box-sizing: border-box;">
+        </div>
+      </div>
+      
+      <button class="form-btn" id="registerSellerSubmitBtn" style="margin-top: 0.5rem; background: var(--primary-color); color: white;">Create Store & Login</button>
+    </div>
+
+    <!-- Step 4: Customer Registration -->
+    <div class="login-step" id="loginStepCustomerRegister" style="display: none;">
+      <i class="fa-solid fa-user-plus fa-3x" style="color: var(--primary-color); margin-bottom: 1rem;"></i>
+      <h3>Complete Customer Profile</h3>
+      <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.2rem; text-align: center;">Register your details for order delivery and discounts.</p>
+      
+      <div class="form-group" style="width: 100%; margin-bottom: 0.8rem;">
+        <label for="registerCustName" style="font-weight:700; color:var(--primary-dark); font-size:0.85rem;">Full Name</label>
+        <input type="text" id="registerCustName" placeholder="e.g. John Doe" style="width: 100%; padding: 0.7rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-primary); font-size: 0.95rem; font-weight: 600; box-sizing: border-box;">
+      </div>
+      
+      <div class="form-group" style="width: 100%; margin-bottom: 0.8rem;">
+        <label for="registerCustEmail" style="font-weight:700; color:var(--primary-dark); font-size:0.85rem;">Email Address</label>
+        <input type="email" id="registerCustEmail" placeholder="e.g. john@example.com" style="width: 100%; padding: 0.7rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-primary); font-size: 0.95rem; font-weight: 600; box-sizing: border-box;">
+      </div>
+
+      <div class="form-group" style="width: 100%; margin-bottom: 0.8rem;">
+        <label for="registerCustAddress" style="font-weight:700; color:var(--primary-dark); font-size:0.85rem;">Delivery Address</label>
+        <input type="text" id="registerCustAddress" placeholder="e.g. 123 Green Street" style="width: 100%; padding: 0.7rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-primary); font-size: 0.95rem; font-weight: 600; box-sizing: border-box;">
+      </div>
+
+      <div class="form-group" style="width: 100%; margin-bottom: 0.8rem;">
+        <label for="registerCustPincode" style="font-weight:700; color:var(--primary-dark); font-size:0.85rem;">Pincode</label>
+        <input type="text" id="registerCustPincode" placeholder="e.g. 400001" style="width: 100%; padding: 0.7rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-primary); font-size: 0.95rem; font-weight: 600; box-sizing: border-box;">
+      </div>
+
+      <div class="form-group" style="width: 100%; margin-bottom: 0.8rem;">
+        <label style="font-weight:700; color:var(--primary-dark); font-size:0.85rem; display: flex; justify-content: space-between; align-items: center;">
+          <span>GPS Coordinates</span>
+          <button type="button" id="detectLocationBtn" style="background: none; border: none; color: var(--accent-color); font-weight: 700; cursor: pointer; font-size: 0.8rem; padding: 0;">
+            <i class="fa-solid fa-location-crosshairs"></i> Get GPS Location
+          </button>
+        </label>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+          <input type="text" id="registerCustLat" placeholder="Latitude" style="width: 100%; padding: 0.7rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-primary); font-size: 0.9rem; font-weight: 600; box-sizing: border-box;">
+          <input type="text" id="registerCustLng" placeholder="Longitude" style="width: 100%; padding: 0.7rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-primary); font-size: 0.9rem; font-weight: 600; box-sizing: border-box;">
+        </div>
+      </div>
+      
+      <button class="form-btn" id="registerCustSubmitBtn" style="margin-top: 0.5rem; background: var(--primary-color); color: white;">Register & Login</button>
+    </div>
+  </div>
+
+  <!-- Simulated Payment Gateway Modal -->
+  <div class="payment-gateway-modal" id="paymentGatewayModal">
+    <div class="gateway-header" style="background: var(--primary-color); color: var(--text-white); padding: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+      <i class="fa-solid fa-lock" style="color: var(--accent-color);"></i> VeggieDirect Secure Payment Gateway
+    </div>
+    <div class="gateway-body" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.2rem;">
+      <div class="amount-badge" style="background: var(--accent-light); color: var(--primary-color); padding: 0.8rem 1rem; border-radius: var(--radius-sm); font-weight: 800; font-size: 1.1rem; text-align: center;">
+        Paying: <span id="gatewayAmount">₹0</span>
+      </div>
+      
+      <div class="upi-option-section">
+        <p style="font-size: 0.85rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--primary-dark);">Option 1: Pay using UPI ID</p>
+        <input type="text" id="upiIdInput" class="gateway-input" placeholder="e.g., mobile@okaxis" style="width: 100%; padding: 0.7rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-primary);">
+      </div>
+      
+      <div class="card-option-section" style="border-top: 1px dashed var(--border-color); padding-top: 1rem;">
+        <p style="font-size: 0.85rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--primary-dark);">Option 2: Pay with Credit/Debit Card</p>
+        <input type="text" class="gateway-input" placeholder="Card Number (16 digits)" style="width: 100%; padding: 0.7rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-primary); margin-bottom: 0.5rem;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+          <input type="text" class="gateway-input" placeholder="MM/YY" style="width: 100%; padding: 0.7rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-primary);">
+          <input type="password" class="gateway-input" placeholder="CVV" maxlength="3" style="width: 100%; padding: 0.7rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-primary);">
+        </div>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr; gap: 0.5rem; margin-top: 0.5rem;">
+        <button class="form-btn" id="submitPaymentBtn" style="background: var(--accent-color);">Authorize Payment</button>
+        <button class="form-btn" id="cancelPaymentBtn" style="background: #e2ede5; color: var(--text-secondary); border: 1px solid var(--border-color);">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Simulated Bargaining / Price Negotiation Modal -->
+  <div class="bargain-modal" id="bargainModal">
+    <button class="close-btn bargain-close" id="closeBargainBtn">&times;</button>
+    <div class="bargain-body" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.2rem;">
+      <h3 style="color: var(--primary-dark); border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;"><i class="fa-solid fa-handshake"></i> Direct Farmer Negotiation</h3>
+      
+      <div class="bargain-prod-header" style="display: flex; gap: 1rem; align-items: center;">
+        <img src="" id="bargainProdImg" alt="Veggie" style="width: 70px; height: 70px; border-radius: var(--radius-sm); object-fit: cover; background: var(--bg-primary);">
+        <div>
+          <h4 id="bargainProdTitle" style="color: var(--primary-color); font-size: 1.15rem;">Tomato</h4>
+          <p style="font-size: 0.8rem; color: var(--text-secondary);">Seller: <strong id="bargainSellerName">Farmside Fresh</strong></p>
+        </div>
+      </div>
+      
+      <div class="price-comparison-box" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center; background: var(--bg-primary); padding: 0.8rem; border-radius: var(--radius-sm);">
+        <div class="price-comp-item">
+          <span class="price-comp-label" style="display: block; font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;">Listed Price</span>
+          <span class="price-comp-val" id="bargainOriginalPrice" style="font-size: 1.2rem; font-weight: 700; color: var(--text-main);">₹40</span>
+        </div>
+        <div class="price-comp-item">
+          <span class="price-comp-label" style="display: block; font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;">Your Offer</span>
+          <span class="price-comp-val highlighted" id="bargainOfferVal" style="font-size: 1.3rem; font-weight: 800; color: var(--primary-color);">₹36</span>
+        </div>
+      </div>
+
+      <div class="slider-group" style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <label for="bargainSlider" style="font-size: 0.85rem; font-weight: 700; color: var(--primary-dark);">Drag to propose your offer price:</label>
+        <input type="range" id="bargainSlider" min="0" max="100" value="90" step="1" style="width: 100%; cursor: pointer; accent-color: var(--primary-color);">
+        <div class="slider-bounds" style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; color: var(--text-secondary);">
+          <span id="bargainMinBound">₹30</span>
+          <span id="bargainMaxBound">₹40</span>
+        </div>
+      </div>
+
+      <!-- Bargain Negotiation Dialogue Screen -->
+      <div class="bargain-dialogue-box" id="bargainDialogueBox" style="display: flex; gap: 0.8rem; align-items: center; background: var(--accent-light); padding: 0.9rem; border-radius: var(--radius-sm); border-left: 4px solid var(--accent-color);">
+        <div class="dialogue-avatar" style="font-size: 1.5rem; color: var(--primary-color);"><i class="fa-solid fa-circle-user"></i></div>
+        <div class="dialogue-text" id="bargainDialogueText" style="font-size: 0.85rem; line-height: 1.4; color: var(--text-main); font-weight: 600;">
+          "Make an offer, let's agree on a price directly!"
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr; gap: 0.5rem; margin-top: 0.5rem;" id="bargainActionRow">
+        <button class="form-btn" id="submitBargainBtn" style="background: var(--primary-color);">Submit Offer Price</button>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.5rem; display: none;" id="bargainCounterRow">
+        <button class="form-btn" id="acceptBargainCounterBtn" style="background: var(--accent-color);">Accept Counter</button>
+        <button class="form-btn" id="rejectBargainCounterBtn" style="background: #e2ede5; color: var(--text-secondary); border: 1px solid var(--border-color);">Decline</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reusable Premium Custom Dialog Modal (Alert/Confirm/Prompt) -->
+  <div class="custom-dialog-modal" id="customDialogModal">
+    <h3 id="dialogTitle">
+      <i class="fa-solid fa-circle-question"></i> Confirm Action
+    </h3>
+    <p id="dialogMessage">Are you sure?</p>
+    <div class="dialog-input-wrapper" id="dialogInputWrapper">
+      <input type="text" id="dialogInput">
+    </div>
+    <div class="dialog-actions">
+      <button class="dialog-btn cancel" id="dialogCancelBtn">Cancel</button>
+      <button class="dialog-btn confirm" id="dialogConfirmBtn">Confirm</button>
+    </div>
+  </div>
+
+  <!-- Dynamic Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Simulated OTP SMS Toast Popup (displays at left corner) -->
+  <div id="smsOtpPopup" style="position: fixed; bottom: 20px; left: 20px; width: 320px; background: #ffffff; border-left: 5px solid var(--primary-color); border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); padding: 1.2rem; z-index: 1200; display: none; flex-direction: column; gap: 0.5rem; box-sizing: border-box; font-family: 'Outfit', sans-serif;"></div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-logo">
+        <i class="fa-solid fa-leaf"></i> Veggie<span>Direct</span>
+      </div>
+      <div>
+        <p>&copy; 2026 VeggieDirect. Direct connecting farmers to tables.</p>
+      </div>
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Use</a>
+        <a href="#">Contact Support</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>

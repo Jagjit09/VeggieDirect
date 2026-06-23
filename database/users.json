@@ -1,0 +1,26 @@
+[
+  {
+    "phone": "+917620653291",
+    "name": "Jagjit Gajanan Bhosale",
+    "email": "",
+    "address": "gandhinar vita",
+    "pincode": "415311",
+    "coordinates": {
+      "lat": 16.692213,
+      "lng": 74.244125
+    },
+    "registeredAt": "2026-06-23T06:49:18.922Z"
+  },
+  {
+    "phone": "+917666452703",
+    "name": "Pratik Chavan",
+    "email": "pratik10.kop@gmail.com",
+    "address": "Tembe road , Raviwar Peth , kolhapur",
+    "pincode": "416012",
+    "coordinates": {
+      "lat": 18.9482,
+      "lng": 72.8258
+    },
+    "registeredAt": "2026-06-23T07:02:14.610Z"
+  }
+]
