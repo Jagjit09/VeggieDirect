@@ -1,5 +1,17 @@
 [
   {
+    "id": 4,
+    "name": "cabbage",
+    "category": "roots",
+    "price": 95,
+    "originalPrice": 100,
+    "discountPct": 5,
+    "unit": "kg",
+    "sellerId": 2,
+    "imageKey": "carrot",
+    "stock": 43
+  },
+  {
     "id": 3,
     "name": "Crunchy Carrots",
     "category": "roots",

@@ -22,5 +22,17 @@
       "lng": 72.8258
     },
     "registeredAt": "2026-06-23T07:02:14.610Z"
+  },
+  {
+    "phone": "+918087115499",
+    "name": "Aman Korabuu",
+    "email": "amankorabuu@gmail.com",
+    "address": "Laxmipuri , Kolhapur",
+    "pincode": "416416",
+    "coordinates": {
+      "lat": 16.692171,
+      "lng": 74.244091
+    },
+    "registeredAt": "2026-06-23T07:18:27.199Z"
   }
 ]

@@ -535,6 +535,7 @@ function setupEventListeners() {
   // Auto-advance cursor in OTP inputs
   otpInputFields.forEach((field, idx) => {
     field.addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/[^0-9]/g, '');
       if (e.target.value.length === 1 && idx < otpInputFields.length - 1) {
         otpInputFields[idx + 1].focus();
       }
@@ -663,6 +664,49 @@ function setupEventListeners() {
       } else {
         submitBargainBtn.click();
       }
+    }
+  });
+
+  // Enforce digits-only on number textboxes
+  loginMobile.addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+  });
+
+  const registerCustPincode = document.getElementById('registerCustPincode');
+  if (registerCustPincode) {
+    registerCustPincode.addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/[^0-9]/g, '');
+    });
+  }
+
+  const paymentCardNumber = document.getElementById('paymentCardNumber');
+  if (paymentCardNumber) {
+    paymentCardNumber.addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/[^0-9]/g, '');
+    });
+  }
+
+  const paymentExpiry = document.getElementById('paymentExpiry');
+  if (paymentExpiry) {
+    paymentExpiry.addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/[^0-9/]/g, '');
+    });
+  }
+
+  const paymentCvv = document.getElementById('paymentCvv');
+  if (paymentCvv) {
+    paymentCvv.addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/[^0-9]/g, '');
+    });
+  }
+
+  // Enforce numbers and decimals on coordinate textboxes
+  ['registerCustLat', 'registerCustLng', 'registerFarmLat', 'registerFarmLng'].forEach(id => {
+    const input = document.getElementById(id);
+    if (input) {
+      input.addEventListener('input', (e) => {
+        e.target.value = e.target.value.replace(/[^0-9.-]/g, '');
+      });
     }
   });
 }

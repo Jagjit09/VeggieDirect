@@ -46,5 +46,25 @@
     "address": "Tembe road , Raviwar Peth , kolhapur",
     "deliveryFee": 2924,
     "orderedAt": "2026-06-23T07:02:27.462Z"
+  },
+  {
+    "id": 3,
+    "items": [
+      {
+        "productId": 4,
+        "quantity": 6
+      },
+      {
+        "productId": 4,
+        "quantity": 1
+      }
+    ],
+    "paymentMethod": "Cash on Delivery",
+    "phone": "+917620653291",
+    "total": 3504,
+    "status": "accepted",
+    "address": "gandhinar vita",
+    "deliveryFee": 2923,
+    "orderedAt": "2026-06-23T07:36:20.012Z"
   }
 ]

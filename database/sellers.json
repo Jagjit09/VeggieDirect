@@ -10,5 +10,17 @@
     "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=60",
     "phone": "+91 76206 53291",
     "email": "jagjitbhosale09@gmail.com"
+  },
+  "2": {
+    "id": 2,
+    "name": "GrabStore",
+    "rating": 5,
+    "coordinates": {
+      "lat": 18.9482,
+      "lng": 72.8258
+    },
+    "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=60",
+    "phone": "+91 96738 64321",
+    "email": "grabby@gmail.com"
   }
 }
