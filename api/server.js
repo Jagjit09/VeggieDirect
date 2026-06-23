@@ -681,7 +681,9 @@ const requestHandler = (req, res) => {
   });
 };
 
-if (require.main === module) {
+module.exports = requestHandler;
+
+if (require.main === module && !process.env.VERCEL) {
   const server = http.createServer(requestHandler);
   server.listen(PORT, () => {
     console.log(`\n==================================================`);
@@ -691,6 +693,4 @@ if (require.main === module) {
     console.log(`Press Ctrl+C to stop the server.`);
     console.log(`==================================================\n`);
   });
-} else {
-  module.exports = requestHandler;
 }

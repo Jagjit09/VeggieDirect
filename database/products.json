@@ -1,5 +1,17 @@
 [
   {
+    "id": 6,
+    "name": "Red Onions",
+    "category": "exotic",
+    "price": 57,
+    "originalPrice": 60,
+    "discountPct": 5,
+    "unit": "1 kg",
+    "sellerId": 1,
+    "imageKey": "onion",
+    "stock": 400
+  },
+  {
     "id": 5,
     "name": "Magical Mashrooms",
     "category": "herbs",
