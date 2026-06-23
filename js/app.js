@@ -571,6 +571,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     switchRole('customer');
   }
   
+  // Set default harvest time to current local time
+  const harvestInput = document.getElementById('prodHarvestTime');
+  if (harvestInput) {
+    const now = new Date();
+    const offset = now.getTimezoneOffset() * 60000;
+    const localISOTime = (new Date(now - offset)).toISOString().slice(0, 16);
+    harvestInput.value = localISOTime;
+  }
+
   updateCartUI();
 });
 
@@ -900,7 +909,7 @@ function setupEventListeners() {
 }
 
 // --- Role Switcher (Customer <-> Seller) ---
-function switchRole(role) {
+async function switchRole(role) {
   if (role === 'seller') {
     if (currentUserRole !== 'seller' || !currentSellerId) {
       showToast("Please log in with a Seller account to access the dashboard!", "warning");
@@ -917,6 +926,7 @@ function switchRole(role) {
     customerPanel.classList.add('active');
     sellerPanel.classList.remove('active');
     showToast("Switched to Customer App View", "info");
+    await loadSellersAndProducts();
     renderProducts();
   } else {
     customerToggleBtn.classList.remove('active');
@@ -1620,6 +1630,11 @@ function updateSellerDashboardListings() {
         </span>
       </td>
       <td>
+        <div style="font-weight: 500; font-size: 0.85rem; color: var(--text-secondary);">
+          ${p.harvestTime ? new Date(p.harvestTime).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' }) : 'N/A'}
+        </div>
+      </td>
+      <td>
         <div class="table-actions">
           <button class="table-action-btn" onclick="triggerSellerDiscountEdit(${p.id})" title="Adjust Discount Offer">
             <i class="fa-solid fa-percent"></i>
@@ -1644,6 +1659,8 @@ async function handleAddProduct(e) {
   const discount = parseInt(document.getElementById('prodDiscount').value) || 0;
   const stock = parseInt(document.getElementById('prodStock').value);
   const imageKey = document.getElementById('prodImageSelect').value;
+  const harvestTimeVal = document.getElementById('prodHarvestTime').value;
+  const harvestTime = harvestTimeVal ? new Date(harvestTimeVal).getTime() : Date.now();
 
   const currentPrice = Math.round(originalPrice * (1 - discount / 100));
 
@@ -1662,16 +1679,28 @@ async function handleAddProduct(e) {
         unit: unit,
         sellerId: currentSellerId,
         imageKey: imageKey,
-        stock: stock
+        stock: stock,
+        harvestTime: harvestTime
       })
     });
     const data = await res.json();
     if (data.success) {
       await loadSellersAndProducts();
       addProductForm.reset();
+      
+      // Reset harvest time input to current local time
+      const harvestInput = document.getElementById('prodHarvestTime');
+      if (harvestInput) {
+        const now = new Date();
+        const offset = now.getTimezoneOffset() * 60000;
+        const localISOTime = (new Date(now - offset)).toISOString().slice(0, 16);
+        harvestInput.value = localISOTime;
+      }
+
       showToast(`Successfully published ${name} to customer catalog!`, "success");
       await updateSellerDashboardStats();
       updateSellerDashboardListings();
+      renderProducts(); // Refresh catalog instantly
     } else {
       showToast(data.error || "Failed to publish product.", "error");
     }

@@ -521,7 +521,8 @@ const requestHandler = async (req, res) => {
         unit: productData.unit,
         sellerId: productData.sellerId || 1,
         imageKey: productData.imageKey,
-        stock: productData.stock || 0
+        stock: productData.stock || 0,
+        harvestTime: productData.harvestTime || Date.now()
       };
       products.unshift(newProduct);
       writeJsonFile(DB_PATHS.products, products);
