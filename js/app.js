@@ -181,6 +181,43 @@ function getCoordinatesFromPincode(pincode) {
   return { lat: 18.9482, lng: 72.8258 }; // Default Mumbai Kalbadevi
 }
 
+// IP Geolocation API Helper (Multi-provider fallback)
+async function getLocationByIp() {
+  try {
+    const res = await fetch('https://ipapi.co/json/');
+    const data = await res.json();
+    if (data && data.latitude && data.longitude) {
+      return {
+        lat: parseFloat(data.latitude),
+        lng: parseFloat(data.longitude),
+        pincode: data.postal || '',
+        city: data.city || '',
+        region: data.region || '',
+        address: `${data.city || ''}, ${data.region || ''}, ${data.country_name || ''}`
+      };
+    }
+  } catch (err) {
+    console.warn("ipapi.co failed, trying ipwho.is...", err);
+    try {
+      const res = await fetch('https://ipwho.is/');
+      const data = await res.json();
+      if (data && data.success) {
+        return {
+          lat: parseFloat(data.latitude),
+          lng: parseFloat(data.longitude),
+          pincode: data.postal || '',
+          city: data.city || '',
+          region: data.region || '',
+          address: `${data.city || ''}, ${data.region || ''}, ${data.country || ''}`
+        };
+      }
+    } catch (err2) {
+      console.error("All IP Geolocation APIs failed:", err2);
+    }
+  }
+  return null;
+}
+
 // User location initializer
 async function initUserLocation() {
   if (currentUserCoordinates) {
@@ -204,12 +241,44 @@ async function initUserLocation() {
         renderProducts();
         updateCartUI();
       },
-      (error) => {
-        console.warn("Geolocation fallback applied:", error);
-        currentUserCoordinates = { lat: 18.9482, lng: 72.8258 };
+      async (error) => {
+        console.warn("Geolocation fallback to IP Geolocation applied:", error);
+        const ipLoc = await getLocationByIp();
+        if (ipLoc) {
+          currentUserCoordinates = { lat: ipLoc.lat, lng: ipLoc.lng };
+          if (ipLoc.pincode) {
+            localStorage.setItem('currentUserPincode', ipLoc.pincode);
+          }
+          if (ipLoc.address) {
+            localStorage.setItem('currentUserAddress', ipLoc.address);
+          }
+          showToast(`Location detected: ${ipLoc.city || 'local area'} (via IP)`, "info");
+        } else {
+          currentUserCoordinates = { lat: 18.9482, lng: 72.8258 };
+        }
         localStorage.setItem('currentUserCoordinates', JSON.stringify(currentUserCoordinates));
+        renderProducts();
+        updateCartUI();
       }
     );
+  } else {
+    // Direct IP fallback
+    const ipLoc = await getLocationByIp();
+    if (ipLoc) {
+      currentUserCoordinates = { lat: ipLoc.lat, lng: ipLoc.lng };
+      if (ipLoc.pincode) {
+        localStorage.setItem('currentUserPincode', ipLoc.pincode);
+      }
+      if (ipLoc.address) {
+        localStorage.setItem('currentUserAddress', ipLoc.address);
+      }
+      showToast(`Location detected: ${ipLoc.city || 'local area'} (via IP)`, "info");
+    } else {
+      currentUserCoordinates = { lat: 18.9482, lng: 72.8258 };
+    }
+    localStorage.setItem('currentUserCoordinates', JSON.stringify(currentUserCoordinates));
+    renderProducts();
+    updateCartUI();
   }
 }
 
@@ -564,36 +633,88 @@ function setupEventListeners() {
   const detectLocationBtn = document.getElementById('detectLocationBtn');
   if (detectLocationBtn) {
     detectLocationBtn.addEventListener('click', () => {
-      showToast("Fetching GPS Coordinates...", "info");
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          document.getElementById('registerCustLat').value = position.coords.latitude.toFixed(6);
-          document.getElementById('registerCustLng').value = position.coords.longitude.toFixed(6);
-          showToast("GPS location captured successfully!", "success");
-        },
-        (error) => {
-          console.error("GPS capture error:", error);
-          showToast("Failed to fetch GPS coordinates. Please allow location access or type pincode.", "error");
-        }
-      );
+      showToast("Fetching Coordinates...", "info");
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            document.getElementById('registerCustLat').value = position.coords.latitude.toFixed(6);
+            document.getElementById('registerCustLng').value = position.coords.longitude.toFixed(6);
+            showToast("GPS location captured successfully!", "success");
+          },
+          async (error) => {
+            console.warn("GPS capture failed, trying IP-based location...", error);
+            showToast("GPS blocked. Fetching location via IP...", "info");
+            const ipLoc = await getLocationByIp();
+            if (ipLoc) {
+              document.getElementById('registerCustLat').value = ipLoc.lat.toFixed(6);
+              document.getElementById('registerCustLng').value = ipLoc.lng.toFixed(6);
+              if (ipLoc.pincode) {
+                document.getElementById('registerCustPincode').value = ipLoc.pincode;
+              }
+              if (ipLoc.address) {
+                document.getElementById('registerCustAddress').value = ipLoc.address;
+              }
+              showToast("Location captured via IP address!", "success");
+            } else {
+              showToast("Failed to fetch location by IP. Please enter details manually.", "error");
+            }
+          }
+        );
+      } else {
+        getLocationByIp().then(ipLoc => {
+          if (ipLoc) {
+            document.getElementById('registerCustLat').value = ipLoc.lat.toFixed(6);
+            document.getElementById('registerCustLng').value = ipLoc.lng.toFixed(6);
+            if (ipLoc.pincode) {
+              document.getElementById('registerCustPincode').value = ipLoc.pincode;
+            }
+            if (ipLoc.address) {
+              document.getElementById('registerCustAddress').value = ipLoc.address;
+            }
+            showToast("Location captured via IP address!", "success");
+          } else {
+            showToast("Failed to capture location.", "error");
+          }
+        });
+      }
     });
   }
 
   const detectSellerLocationBtn = document.getElementById('detectSellerLocationBtn');
   if (detectSellerLocationBtn) {
     detectSellerLocationBtn.addEventListener('click', () => {
-      showToast("Fetching GPS Coordinates...", "info");
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          document.getElementById('registerFarmLat').value = position.coords.latitude.toFixed(6);
-          document.getElementById('registerFarmLng').value = position.coords.longitude.toFixed(6);
-          showToast("GPS location captured successfully!", "success");
-        },
-        (error) => {
-          console.error("GPS capture error:", error);
-          showToast("Failed to fetch GPS coordinates. Please allow location access.", "error");
-        }
-      );
+      showToast("Fetching Coordinates...", "info");
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            document.getElementById('registerFarmLat').value = position.coords.latitude.toFixed(6);
+            document.getElementById('registerFarmLng').value = position.coords.longitude.toFixed(6);
+            showToast("GPS location captured successfully!", "success");
+          },
+          async (error) => {
+            console.warn("GPS capture failed, trying IP-based location...", error);
+            showToast("GPS blocked. Fetching location via IP...", "info");
+            const ipLoc = await getLocationByIp();
+            if (ipLoc) {
+              document.getElementById('registerFarmLat').value = ipLoc.lat.toFixed(6);
+              document.getElementById('registerFarmLng').value = ipLoc.lng.toFixed(6);
+              showToast("Location captured via IP address!", "success");
+            } else {
+              showToast("Failed to fetch location by IP. Please enter details manually.", "error");
+            }
+          }
+        );
+      } else {
+        getLocationByIp().then(ipLoc => {
+          if (ipLoc) {
+            document.getElementById('registerFarmLat').value = ipLoc.lat.toFixed(6);
+            document.getElementById('registerFarmLng').value = ipLoc.lng.toFixed(6);
+            showToast("Location captured via IP address!", "success");
+          } else {
+            showToast("Failed to capture location.", "error");
+          }
+        });
+      }
     });
   }
 
