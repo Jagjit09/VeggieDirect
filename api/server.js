@@ -23,11 +23,11 @@ const IS_VERCEL = process.env.VERCEL;
 
 // Database file paths
 const DB_PATHS = {
-  products: IS_VERCEL ? path.join('/tmp', 'products.json') : path.join(__dirname, '..', 'database', 'products.json'),
-  sellers: IS_VERCEL ? path.join('/tmp', 'sellers.json') : path.join(__dirname, '..', 'database', 'sellers.json'),
-  users: IS_VERCEL ? path.join('/tmp', 'users.json') : path.join(__dirname, '..', 'database', 'users.json'),
-  chats: IS_VERCEL ? path.join('/tmp', 'chats.json') : path.join(__dirname, '..', 'database', 'chats.json'),
-  orders: IS_VERCEL ? path.join('/tmp', 'orders.json') : path.join(__dirname, '..', 'database', 'orders.json')
+  products: IS_VERCEL ? path.join('/tmp', 'products.json') : path.join(process.cwd(), 'database', 'products.json'),
+  sellers: IS_VERCEL ? path.join('/tmp', 'sellers.json') : path.join(process.cwd(), 'database', 'sellers.json'),
+  users: IS_VERCEL ? path.join('/tmp', 'users.json') : path.join(process.cwd(), 'database', 'users.json'),
+  chats: IS_VERCEL ? path.join('/tmp', 'chats.json') : path.join(process.cwd(), 'database', 'chats.json'),
+  orders: IS_VERCEL ? path.join('/tmp', 'orders.json') : path.join(process.cwd(), 'database', 'orders.json')
 };
 
 // Default welcome message per seller
@@ -47,7 +47,7 @@ function readJsonFile(filePath, defaultVal = []) {
       // If we are on Vercel and the /tmp file doesn't exist yet,
       // load it from the bundled project database files.
       const baseName = path.basename(filePath);
-      const bundledPath = path.join(__dirname, '..', 'database', baseName);
+      const bundledPath = path.join(process.cwd(), 'database', baseName);
       if (fs.existsSync(bundledPath)) {
         const data = JSON.parse(fs.readFileSync(bundledPath, 'utf-8'));
         fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
@@ -75,20 +75,26 @@ const activeOtps = new Map();
 
 // Load Environment variables from .env file
 function loadEnv() {
-  const envPath = path.join(__dirname, '..', '.env');
-  if (fs.existsSync(envPath)) {
-    const content = fs.readFileSync(envPath, 'utf-8');
-    content.split('\n').forEach(line => {
-      const clean = line.trim();
-      if (clean && !clean.startsWith('#')) {
-        const index = clean.indexOf('=');
-        if (index > 0) {
-          const key = clean.substring(0, index).trim();
-          const val = clean.substring(index + 1).trim();
-          process.env[key] = val;
+  if (process.env.VERCEL) return;
+
+  try {
+    const envPath = path.join(process.cwd(), '.env');
+    if (fs.existsSync(envPath)) {
+      const content = fs.readFileSync(envPath, 'utf-8');
+      content.split('\n').forEach(line => {
+        const clean = line.trim();
+        if (clean && !clean.startsWith('#')) {
+          const index = clean.indexOf('=');
+          if (index > 0) {
+            const key = clean.substring(0, index).trim();
+            const val = clean.substring(index + 1).trim();
+            process.env[key] = val;
+          }
         }
-      }
-    });
+      });
+    }
+  } catch (err) {
+    console.error("Error loading .env file:", err);
   }
 }
 loadEnv();
@@ -653,9 +659,9 @@ const requestHandler = (req, res) => {
   }
 
   // --- STATIC FILE SERVER HANDLER ---
-  let filePath = path.join(__dirname, '..', decodedUrl === '/' ? 'index.html' : decodedUrl);
+  let filePath = path.join(process.cwd(), decodedUrl === '/' ? 'index.html' : decodedUrl);
   
-  const rootDir = path.join(__dirname, '..');
+  const rootDir = process.cwd();
   if (!filePath.startsWith(rootDir)) {
     res.writeHead(403, { 'Content-Type': 'text/plain' });
     res.end('403 Forbidden');
